@@ -1,0 +1,48 @@
+CATEGORY	VALUE				USED IN ARDUPILOT SIM_XPlane.CPP			NOTES
+----------------------------------------------------------------------------------------------------------------------------------------------------
+1			TIMES				data[3] * 1.0e6f							if the difference between now and then is > 1e6, x-plane time is reset
+
+3			SPEEDS				data[2] * KNOTS_TO_METERS_PER_SECOND
+
+4			G-LOAD		        accel_body.z = -data[5] * GRAVITY_MSS
+           					 	accel_body.x = data[6] * GRAVITY_MSS
+            					accel_body.y = data[7] * GRAVITY_MSS
+
+8			JOYSTICK		    rcin[0] = (data[2] + 1)*0.5f
+            					rcin[1] = (data[1] + 1)*0.5f
+            					rcin[3] = (data[3] + 1)*0.5f
+
+13			TRIM/FLAPS			N/A 										HELI ONLY
+
+16			ANG. VELOCITY 		gyro.y = data[1]
+            					gyro.x = data[2]
+            					gyro.z = data[3]
+
+17			PITCH				radians(data[1])
+			ROLL				radians(data[2])
+			HDNG				radians(data[3])
+
+20			LAT					data[1] * 1e7								ground_level = loc.alt * 0.01f - altitude_above_ground
+			LON					data[2] * 1e7
+			ALT					data[3] * FEET_TO_METERS * 100.0f
+			RAlt				data[4] * FEET_TO_METERS	
+
+21			LOC  				pos.y = data[1]
+            					pos.z = -data[2]
+            					pos.x = -data[3]
+			VEL  				velocity_ef.y = data[4]
+            					velocity_ef.z = -data[5]
+            					velocity_ef.x = -data[6]
+
+25			THROTTLE			rcin[2] = data[1]							Does some magic to detect some stuff, I don't think it matters for us			
+
+29			MIXTURE				data[3]
+								data[4]
+
+37			ENGINE RPM			data[1]
+
+38			PROP RPM			data[1]
+
+39			PROP PITCH			N/A
+
+58			GENERATOR			data[1]

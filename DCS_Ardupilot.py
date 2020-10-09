@@ -33,8 +33,9 @@ def encode_mp(state_in, mp_subjects_in):
         if subj == 1:  # Time
             msg_out_section[12:16] = list(struct.pack('f', state_in['Time']))
 
-        elif subj == 3:  # V_ind
-            msg_out_section[8:12] = list(struct.pack('f', state_in['V_ind']))
+        elif subj == 3:  # V_eas
+            # Not sure which one DCS outputs - indicated or equivalent. Ardupilot uses EAS
+            msg_out_section[8:12] = list(struct.pack('f', state_in['V_ind'] * 1.94384))  # m/s to knots
 
         elif subj == 4:  # Norml, Axial, Side
             msg_out_section[20:24] = list(struct.pack('f', state_in['Norml']))
@@ -59,10 +60,14 @@ def encode_mp(state_in, mp_subjects_in):
         elif subj == 20:  # Lat, Lon, Alt, RAlt
             msg_out_section[4:8] = list(struct.pack('f', state_in['Lat']))
             msg_out_section[8:12] = list(struct.pack('f', state_in['Lon']))
-            msg_out_section[12:16] = list(struct.pack('f', state_in['Alt']))
-            msg_out_section[16:20] = list(struct.pack('f', state_in['RAlt']))
+            msg_out_section[12:16] = list(struct.pack('f', state_in['Alt'] * 3.28084))  # m to ft
+            msg_out_section[16:20] = list(struct.pack('f', state_in['RAlt'] * 3.28084))  # m to ft
 
         elif subj == 21:  # Pos_E, Pos_U, Pos_S, Vel_E, Vel_U, Vel_S
+            # THIS SECTION IS SUSPECT
+            # X-PLANE DOCS REFER TO THIS AS (X,Y,Z) in m and (vX,vY,vZ) in m/s "RELATIVE TO THE INERTIAL AXES"
+            # WHAT INERTIAL AXIS? SEEMS TO BE A STATIONARY OBSERVER REFERENCE FRAME PERHAPS
+            # DCS REFERS TO POS_E,U,S as "INTERNAL DCS COORDINATES" and VelE,U,S as "VELOCITY VECTOR (WORLD AXIS)"
             msg_out_section[4:8] = list(struct.pack('f', state_in['Pos_E']))
             msg_out_section[8:12] = list(struct.pack('f', state_in['Pos_U']))
             msg_out_section[12:16] = list(struct.pack('f', state_in['Pos_S']))
@@ -106,7 +111,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as dcs_s:
             mp_msg_out = encode_mp(dcs_state, mp_subjects)
 
             mp_s.sendto(mp_msg_out, (TO_MP_HOST, TO_MP_PORT))
-
+            # print(mp_msg_out)
             # try:
             #     data, address = mp_s.recvfrom(4096)
             #     print(data)
