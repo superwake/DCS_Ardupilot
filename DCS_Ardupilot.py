@@ -64,10 +64,6 @@ def encode_mp(state_in, mp_subjects_in):
             msg_out_section[16:20] = list(struct.pack('f', state_in['RAlt'] * 3.28084))  # m to ft
 
         elif subj == 21:  # Pos_E, Pos_U, Pos_S, Vel_E, Vel_U, Vel_S
-            # THIS SECTION IS SUSPECT
-            # X-PLANE DOCS REFER TO THIS AS (X,Y,Z) in m and (vX,vY,vZ) in m/s "RELATIVE TO THE INERTIAL AXES"
-            # WHAT INERTIAL AXIS? SEEMS TO BE A STATIONARY OBSERVER REFERENCE FRAME PERHAPS
-            # DCS REFERS TO POS_E,U,S as "INTERNAL DCS COORDINATES" and VelE,U,S as "VELOCITY VECTOR (WORLD AXIS)"
             msg_out_section[4:8] = list(struct.pack('f', state_in['Pos_E']))
             msg_out_section[8:12] = list(struct.pack('f', state_in['Pos_U']))
             msg_out_section[12:16] = list(struct.pack('f', state_in['Pos_S']))
